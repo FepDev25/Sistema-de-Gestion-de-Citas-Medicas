@@ -15,7 +15,7 @@ public class MedicoService {
     public MedicoService(MedicoRepository medicoRepository) {
         this.medicoRepository = medicoRepository;
     }
-
+    // Método para registrar un nuevo médico
     public Medico registrarMedico(Medico medico) {
         if (medicoRepository.findByLicencia(medico.getLicencia()).isPresent()) {
             throw new RuntimeException("La licencia " + medico.getLicencia() + " ya está registrada.");
@@ -23,11 +23,11 @@ public class MedicoService {
         medico.setRol("MEDICO");
         return medicoRepository.save(medico);
     }
-
+    // Método para listar todos los médicos
     public List<Medico> listarMedicos() {
         return medicoRepository.findAll();
     }
-
+    // Método para buscar un médico por ID
     public Medico buscarPorId(Long id) {
         return medicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Médico no encontrado"));
     }
