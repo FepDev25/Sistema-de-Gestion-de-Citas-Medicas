@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface MedicoRepository extends JpaRepository<Medico, Long> {
+    // método para buscar un médico por su licencia
     Optional<Medico> findByLicencia(String licencia);
+    // método para buscar médicos por especialidad
     List<Medico> findByEspecialidad(String especialidad);
 }
