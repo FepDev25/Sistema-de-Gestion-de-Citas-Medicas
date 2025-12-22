@@ -8,13 +8,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/medicos")
 public class MedicoController {
-
+    
     private final MedicoService medicoService;
-
+    // Constructor
     public MedicoController(MedicoService medicoService) {
         this.medicoService = medicoService;
     }
-
+    
     @PostMapping
     public Medico crear(@RequestBody Medico medico) {
         return medicoService.registrarMedico(medico);
