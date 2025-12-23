@@ -55,4 +55,12 @@ public class CitaController {
         return ResponseEntity.ok(citaService.listarCitasPorPaciente(cedula));
     }
 
+    //Cancelar Cita
+    @PutMapping("/cancelar/{idCita}")
+    public ResponseEntity<?> cancelarCita(@PathVariable Long idCita) {
+        return ResponseEntity.ok(
+                citaService.cancelarCita(idCita)
+        );
+    }
+
 }

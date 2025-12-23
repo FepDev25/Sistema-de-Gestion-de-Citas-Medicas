@@ -75,4 +75,23 @@ public class CitaService {
         Paciente paciente = pacienteService.buscarPorCedula(cedulaPaciente);
         return citaRepository.findByPacienteId(paciente.getId());
     }
+
+    public Cita cancelarCita(Long idCita) {
+
+        // Buscar la cita
+        Cita cita = citaRepository.findById(idCita)
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+        // Validar que no esté finalizada
+        if (cita.getEstado() == EstadoCita.FINALIZADA) {
+            throw new RuntimeException("No se puede cancelar una cita ya atendida");
+        }
+
+        // Cambiar estado a CANCELADA
+        cita.setEstado(EstadoCita.CANCELADA);
+
+        // Guardar cambios
+        return citaRepository.save(cita);
+    }
+
 }
