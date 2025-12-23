@@ -36,4 +36,23 @@ public class CitaController {
 
         return ResponseEntity.ok(cita);
     }
+
+    //LISTAR TODAS LAS CITAS
+    @GetMapping
+    public ResponseEntity<?> listarTodasLasCitas() {
+        return ResponseEntity.ok(citaService.listarCitas());
+    }
+
+    //LISTAR CITAS POR MÉDICO
+    @GetMapping("/medico/{idMedico}")
+    public ResponseEntity<?> listarCitasPorMedico(@PathVariable Long idMedico) {
+        return ResponseEntity.ok(citaService.listarCitasPorMedico(idMedico));
+    }
+
+    //LISTAR CITAS POR PACIENTE
+    @GetMapping("/paciente/{cedula}")
+    public ResponseEntity<?> listarCitasPorPaciente(@PathVariable String cedula) {
+        return ResponseEntity.ok(citaService.listarCitasPorPaciente(cedula));
+    }
+
 }

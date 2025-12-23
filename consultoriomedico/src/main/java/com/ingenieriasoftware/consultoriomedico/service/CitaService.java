@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class CitaService {
@@ -51,5 +52,27 @@ public class CitaService {
 
         // 4. Guardar y retornar
         return citaRepository.save(cita);
+    }
+
+    /**
+     * Listar todas las citas
+     */
+    public List<Cita> listarCitas() {
+        return citaRepository.findAll();
+    }
+
+    /**
+     * Listar citas por médico
+     */
+    public List<Cita> listarCitasPorMedico(Long idMedico) {
+        return citaRepository.findByMedico_Id(idMedico);
+    }
+
+    /**
+     * Listar citas por paciente
+     */
+    public List<Cita> listarCitasPorPaciente(String cedulaPaciente) {
+        Paciente paciente = pacienteService.buscarPorCedula(cedulaPaciente);
+        return citaRepository.findByPacienteId(paciente.getId());
     }
 }
