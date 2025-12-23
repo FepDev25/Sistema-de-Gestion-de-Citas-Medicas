@@ -45,20 +45,30 @@ src/main/java/
 └── ec/edu/ups/consultoriomedico/
     ├── controller/
     │   ├── CitaController.java
+    │   ├── ConsultaController.java
     │   ├── MedicoController.java
     │   └── PacienteController.java
+    │
     ├── service/
     │   ├── CitaService.java
+    │   ├── ConsultaService.java
     │   ├── MedicoService.java
     │   └── PacienteService.java
+    │
     ├── repository/
     │   ├── CitaRepository.java
+    │   ├── ConsultaRepository.java
     │   ├── MedicoRepository.java
     │   └── PacienteRepository.java
+    │
     ├── model/
     │   ├── Cita.java
+        ├── EstadoCita.java
+        ├── Usuario.java
+    │   ├── Consulta.java
     │   ├── Medico.java
     │   └── Paciente.java
+    │
     └── ConsultorioMedicoApplication.java
 ```
 
@@ -72,9 +82,6 @@ src/main/java/
 
 - `GET /pacientes/{cedula}`  
   Consultar un paciente por número de cédula.
-
-- `GET /pacientes/{cedula}/historial`  
-  Consultar el historial de citas de un paciente.
 
 ---
 
@@ -93,6 +100,28 @@ src/main/java/
 ### Citas (`/citas`)
 - `POST /citas/agendar`  
   Agendar una cita médica entre un paciente y un médico.
+
+- `GET /citas`  
+  Listar todas las citas registradas en el sistema.
+
+- `GET /citas/medico/{idMedico}`  
+  Listar las citas asignadas a un médico específico.
+
+- `GET /citas/paciente/{cedula}`  
+  Listar las citas de un paciente por número de cédula.
+
+- `PUT /citas/cancelar/{idCita}`  
+  Cancelar una cita médica cambiando su estado a **CANCELADA**.
+
+---
+
+### Consultas médicas (`/consultas`)
+- `POST /consultas/registrar`  
+  Registrar una consulta médica asociada a una cita existente.  
+  *(La cita pasa automáticamente al estado **FINALIZADA**).*
+
+- `GET /consultas/cita/{idCita}`  
+  Obtener la consulta médica asociada a una cita específica (historia clínica básica).
 
 ---
 
@@ -121,3 +150,4 @@ mvn spring-boot:run
 
 El Sistema de Gestión de Citas Médicas permite aplicar de manera práctica los conceptos de Ingeniería de Software, integrando análisis, diseño y construcción de un backend funcional en Spring Boot.
 La arquitectura en capas facilita la mantenibilidad del sistema y permite su futura ampliación con nuevos módulos y un frontend web.
+
