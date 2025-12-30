@@ -4,14 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -149,5 +152,48 @@ class CitaServiceTest {
         verify(citaRepository, times(1)).findByPacienteId(1L);
     }
 
-    
+    @Test
+    void testCancelarCita_Exitoso() {
+        // Arrange
+        when(citaRepository.findById(1L)).thenReturn(Optional.of(cita));
+        when(citaRepository.save(any(Cita.class))).thenReturn(cita);
+
+        // Act
+        Cita citaCancelada = citaService.cancelarCita(1L);
+
+        // Assert
+        assertThat(citaCancelada).isNotNull();
+        assertThat(citaCancelada.getEstado()).isEqualTo(EstadoCita.CANCELADA);
+        verify(citaRepository, times(1)).findById(1L);
+        verify(citaRepository, times(1)).save(any(Cita.class));
+    }
+
+    @Test
+    void testCancelarCita_CitaNoEncontrada() {
+        // Arrange
+        when(citaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> citaService.cancelarCita(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Cita no encontrada");
+        
+        verify(citaRepository, times(1)).findById(1L);
+        verify(citaRepository, never()).save(any(Cita.class));
+    }
+
+    @Test
+    void testCancelarCita_CitaYaFinalizada() {
+        // Arrange
+        cita.setEstado(EstadoCita.FINALIZADA);
+        when(citaRepository.findById(1L)).thenReturn(Optional.of(cita));
+
+        // Act & Assert
+        assertThatThrownBy(() -> citaService.cancelarCita(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("No se puede cancelar una cita ya atendida");
+        
+        verify(citaRepository, times(1)).findById(1L);
+        verify(citaRepository, never()).save(any(Cita.class));
+    }
 }
