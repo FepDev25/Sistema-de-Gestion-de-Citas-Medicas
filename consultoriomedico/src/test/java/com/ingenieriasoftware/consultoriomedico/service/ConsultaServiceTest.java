@@ -1,0 +1,82 @@
+package com.ingenieriasoftware.consultoriomedico.service;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.ingenieriasoftware.consultoriomedico.model.Cita;
+import com.ingenieriasoftware.consultoriomedico.model.Consulta;
+import com.ingenieriasoftware.consultoriomedico.model.EstadoCita;
+import com.ingenieriasoftware.consultoriomedico.model.Medico;
+import com.ingenieriasoftware.consultoriomedico.model.Paciente;
+import com.ingenieriasoftware.consultoriomedico.repository.CitaRepository;
+import com.ingenieriasoftware.consultoriomedico.repository.ConsultaRepository;
+
+@ExtendWith(MockitoExtension.class)
+class ConsultaServiceTest {
+
+    @Mock
+    private ConsultaRepository consultaRepository;
+
+    @Mock
+    private CitaRepository citaRepository;
+
+    @InjectMocks
+    private ConsultaService consultaService;
+
+    private Cita cita;
+    private Consulta consulta;
+    private Medico medico;
+    private Paciente paciente;
+
+    @BeforeEach
+    @SuppressWarnings("unused")
+    void setUp() {
+        // Configurar médico
+        medico = new Medico();
+        medico.setId(1L);
+        medico.setNombres("Dr. Juan");
+        medico.setApellidos("Pérez");
+        medico.setEspecialidad("Cardiología");
+
+        // Configurar paciente
+        paciente = new Paciente();
+        paciente.setId(1L);
+        paciente.setNombres("María");
+        paciente.setApellidos("García");
+        paciente.setCedula("1234567890");
+
+        // Configurar cita
+        cita = new Cita();
+        cita.setIdCita(1L);
+        cita.setMedico(medico);
+        cita.setPaciente(paciente);
+        cita.setFecha(LocalDate.now());
+        cita.setHora(LocalTime.of(10, 0));
+        cita.setDuracion(30);
+        cita.setEstado(EstadoCita.SOLICITADA);
+
+        // Configurar consulta
+        consulta = new Consulta();
+        consulta.setIdConsulta(1L);
+        consulta.setCita(cita);
+        consulta.setDiagnostico("Hipertensión arterial");
+        consulta.setObservaciones("Paciente presenta presión alta");
+        consulta.setPrescripcion("Losartán 50mg, 1 vez al día");
+    }
+}
