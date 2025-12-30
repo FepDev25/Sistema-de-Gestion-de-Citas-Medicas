@@ -79,6 +79,7 @@ class ConsultaServiceTest {
         consulta.setObservaciones("Paciente presenta presión alta");
         consulta.setPrescripcion("Losartán 50mg, 1 vez al día");
     }
+    
     @Test
     void testRegistrarConsulta_Exitoso() {
         // Arrange
@@ -166,5 +167,57 @@ class ConsultaServiceTest {
         verify(citaRepository, times(1)).findById(1L);
         verify(consultaRepository, times(1)).findByCita_IdCita(1L);
         verify(consultaRepository, never()).save(any(Consulta.class));
+    }
+
+    @Test
+    void testBuscarPorCita_Exitoso() {
+        // Arrange
+        when(consultaRepository.findByCita_IdCita(1L)).thenReturn(Optional.of(consulta));
+
+        // Act
+        Consulta consultaEncontrada = consultaService.buscarPorCita(1L);
+
+        // Assert
+        assertThat(consultaEncontrada).isNotNull();
+        assertThat(consultaEncontrada.getIdConsulta()).isEqualTo(1L);
+        assertThat(consultaEncontrada.getCita()).isEqualTo(cita);
+        assertThat(consultaEncontrada.getDiagnostico()).isEqualTo("Hipertensión arterial");
+        
+        verify(consultaRepository, times(1)).findByCita_IdCita(1L);
+    }
+
+    @Test
+    void testBuscarPorCita_ConsultaNoEncontrada() {
+        // Arrange
+        when(consultaRepository.findByCita_IdCita(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> consultaService.buscarPorCita(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("No existe consulta para la cita con id: 1");
+        
+        verify(consultaRepository, times(1)).findByCita_IdCita(1L);
+    }
+
+    @Test
+    void testRegistrarConsulta_VerificaCambioEstadoCita() {
+        // Arrange
+        when(citaRepository.findById(1L)).thenReturn(Optional.of(cita));
+        when(consultaRepository.findByCita_IdCita(1L)).thenReturn(Optional.empty());
+        when(consultaRepository.save(any(Consulta.class))).thenReturn(consulta);
+        
+        Cita citaCapturada = new Cita();
+        citaCapturada.setIdCita(1L);
+        citaCapturada.setEstado(EstadoCita.FINALIZADA);
+        
+        when(citaRepository.save(any(Cita.class))).thenReturn(citaCapturada);
+
+        // Act
+        consultaService.registrarConsulta(1L, "Diagnóstico", "Observaciones", "Prescripción");
+
+        // Assert
+        verify(citaRepository).save(argThat(c -> 
+            c.getEstado() == EstadoCita.FINALIZADA
+        ));
     }
 }
