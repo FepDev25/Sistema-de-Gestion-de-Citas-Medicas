@@ -125,6 +125,35 @@ class MedicoServiceTest {
         // Assert
         assertThat(resultado).isTrue();
     }
+    @Test
+    void testBuscarPorId_Exitoso() {
+        // Arrange
+        when(medicoRepository.findById(1L)).thenReturn(Optional.of(medico));
+
+        // Act
+        Medico medicoEncontrado = medicoService.buscarPorId(1L);
+
+        // Assert
+        assertThat(medicoEncontrado).isNotNull();
+        assertThat(medicoEncontrado.getId()).isEqualTo(1L);
+        assertThat(medicoEncontrado.getNombres()).isEqualTo("Dr. Juan");
+        assertThat(medicoEncontrado.getApellidos()).isEqualTo("Pérez");
+        verify(medicoRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testBuscarPorId_MedicoNoEncontrado() {
+        // Arrange
+        when(medicoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> medicoService.buscarPorId(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Médico no encontrado");
+
+        verify(medicoRepository, times(1)).findById(1L);
+    }
+
 }
 
 
