@@ -46,4 +46,38 @@ class PacienteServiceTest {
         paciente.setFechaNacimiento(LocalDate.of(1990, 5, 15));
         paciente.setUsername("maria.garcia");
     }
+    @Test
+    void testCrearPaciente_Exitoso() {
+        // Arrange
+        when(pacienteRepository.findByCedula("1234567890")).thenReturn(Optional.empty());
+        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+
+        // Act
+        Paciente pacienteCreado = pacienteService.crearPaciente(paciente);
+
+        // Assert
+        assertThat(pacienteCreado).isNotNull();
+        assertThat(pacienteCreado.getNombres()).isEqualTo("María");
+        assertThat(pacienteCreado.getApellidos()).isEqualTo("García");
+        assertThat(pacienteCreado.getCedula()).isEqualTo("1234567890");
+        assertThat(pacienteCreado.getTelefono()).isEqualTo("0999123456");
+        assertThat(pacienteCreado.getDireccion()).isEqualTo("Av. Principal 123");
+        
+        verify(pacienteRepository, times(1)).findByCedula("1234567890");
+        verify(pacienteRepository, times(1)).save(any(Paciente.class));
+    }
+
+    @Test
+    void testCrearPaciente_CedulaDuplicada() {
+        // Arrange
+        when(pacienteRepository.findByCedula("1234567890")).thenReturn(Optional.of(paciente));
+
+        // Act & Assert
+        assertThatThrownBy(() -> pacienteService.crearPaciente(paciente))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Ya existe un paciente con esa cédula");
+        
+        verify(pacienteRepository, times(1)).findByCedula("1234567890");
+        verify(pacienteRepository, never()).save(any(Paciente.class));
+    }
 }
