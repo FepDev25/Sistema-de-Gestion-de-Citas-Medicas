@@ -80,4 +80,66 @@ class PacienteServiceTest {
         verify(pacienteRepository, times(1)).findByCedula("1234567890");
         verify(pacienteRepository, never()).save(any(Paciente.class));
     }
+    @Test
+    void testBuscarPorCedula_Exitoso() {
+        // Arrange
+        when(pacienteRepository.findByCedula("1234567890")).thenReturn(Optional.of(paciente));
+
+        // Act
+        Paciente pacienteEncontrado = pacienteService.buscarPorCedula("1234567890");
+
+        // Assert
+        assertThat(pacienteEncontrado).isNotNull();
+        assertThat(pacienteEncontrado.getCedula()).isEqualTo("1234567890");
+        assertThat(pacienteEncontrado.getNombres()).isEqualTo("María");
+        assertThat(pacienteEncontrado.getApellidos()).isEqualTo("García");
+        assertThat(pacienteEncontrado.getTelefono()).isEqualTo("0999123456");
+        
+        verify(pacienteRepository, times(1)).findByCedula("1234567890");
+    }
+
+    @Test
+    void testBuscarPorCedula_PacienteNoEncontrado() {
+        // Arrange
+        when(pacienteRepository.findByCedula("9999999999")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> pacienteService.buscarPorCedula("9999999999"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Paciente no encontrado");
+        
+        verify(pacienteRepository, times(1)).findByCedula("9999999999");
+    }
+
+    @Test
+    void testCrearPaciente_ConTodosLosCampos() {
+        // Arrange
+        Paciente pacienteCompleto = new Paciente();
+        pacienteCompleto.setId(2L);
+        pacienteCompleto.setNombres("Carlos");
+        pacienteCompleto.setApellidos("Rodríguez");
+        pacienteCompleto.setCedula("0987654321");
+        pacienteCompleto.setTelefono("0988765432");
+        pacienteCompleto.setDireccion("Calle Secundaria 456");
+        pacienteCompleto.setFechaNacimiento(LocalDate.of(1985, 8, 20));
+        pacienteCompleto.setUsername("carlos.rodriguez");
+
+        when(pacienteRepository.findByCedula("0987654321")).thenReturn(Optional.empty());
+        when(pacienteRepository.save(any(Paciente.class))).thenReturn(pacienteCompleto);
+
+        // Act
+        Paciente resultado = pacienteService.crearPaciente(pacienteCompleto);
+
+        // Assert
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getId()).isEqualTo(2L);
+        assertThat(resultado.getNombres()).isEqualTo("Carlos");
+        assertThat(resultado.getApellidos()).isEqualTo("Rodríguez");
+        assertThat(resultado.getCedula()).isEqualTo("0987654321");
+        assertThat(resultado.getUsername()).isEqualTo("carlos.rodriguez");
+        assertThat(resultado.getFechaNacimiento()).isEqualTo(LocalDate.of(1985, 8, 20));
+        
+        verify(pacienteRepository, times(1)).findByCedula("0987654321");
+        verify(pacienteRepository, times(1)).save(any(Paciente.class));
+    }
 }
