@@ -42,21 +42,8 @@ public class CitaService {
         // verificar solapamiento de horarios
         LocalTime horaFin = horaInicio.plusMinutes(duracion);
 
-        List<Cita> citasDelDia = citaRepository.findByMedico_IdAndFechaAndEstadoNot(
-                idMedico, 
-                fecha, 
-                EstadoCita.CANCELADA
-        );
-
-        for (Cita citaExistente : citasDelDia) {
-            LocalTime inicioExistente = citaExistente.getHora();
-            LocalTime finExistente = inicioExistente.plusMinutes(citaExistente.getDuracion());
-
-            // (StartA < EndB) && (EndA > StartB)
-            if (horaInicio.isBefore(finExistente) && horaFin.isAfter(inicioExistente)) {
-                throw new ConflictException("El médico ya tiene una cita agendada en ese horario (" 
-                        + inicioExistente + " - " + finExistente + ")");
-            }
+        if (citaRepository.existsOverlap(idMedico, fecha, horaInicio, horaFin)) {
+            throw new ConflictException("El médico ya tiene una cita agendada en ese horario");
         }
 
         Cita cita = new Cita();
