@@ -10,14 +10,17 @@ import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
 import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
 import com.ingenieriasoftware.consultoriomedico.model.Medico;
 import com.ingenieriasoftware.consultoriomedico.repository.MedicoRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class MedicoService {
 
     private final MedicoRepository medicoRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MedicoService(MedicoRepository medicoRepository) {
+    public MedicoService(MedicoRepository medicoRepository, PasswordEncoder passwordEncoder) {
         this.medicoRepository = medicoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     // Método para registrar un nuevo médico
     @Transactional
@@ -26,6 +29,7 @@ public class MedicoService {
             throw new ConflictException("La licencia " + medico.getLicencia() + " ya está registrada.");
         }
         medico.setRol("MEDICO");
+        medico.setPassword(passwordEncoder.encode(medico.getPassword()));
         return medicoRepository.save(medico);
     }
     // Método para listar todos los médicos
