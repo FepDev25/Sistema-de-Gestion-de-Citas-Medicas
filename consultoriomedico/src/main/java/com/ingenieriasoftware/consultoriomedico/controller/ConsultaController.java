@@ -1,8 +1,17 @@
 package com.ingenieriasoftware.consultoriomedico.controller;
 
-import com.ingenieriasoftware.consultoriomedico.service.ConsultaService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ingenieriasoftware.consultoriomedico.dto.ConsultaRequestDTO;
+import com.ingenieriasoftware.consultoriomedico.service.ConsultaService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/consultas")
@@ -15,18 +24,13 @@ public class ConsultaController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarConsulta(
-            @RequestParam Long idCita,
-            @RequestParam String diagnostico,
-            @RequestParam String observaciones,
-            @RequestParam String prescripcion
-    ) {
+    public ResponseEntity<?> registrarConsulta(@Valid @RequestBody ConsultaRequestDTO consultaDTO) {
         return ResponseEntity.ok(
                 consultaService.registrarConsulta(
-                        idCita,
-                        diagnostico,
-                        observaciones,
-                        prescripcion
+                        consultaDTO.getIdCita(),
+                        consultaDTO.getDiagnostico(),
+                        consultaDTO.getObservaciones(),
+                        consultaDTO.getPrescripcion()
                 )
         );
     }

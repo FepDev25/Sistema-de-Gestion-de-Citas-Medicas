@@ -1,12 +1,19 @@
 package com.ingenieriasoftware.consultoriomedico.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ingenieriasoftware.consultoriomedico.dto.CitaRequestDTO;
 import com.ingenieriasoftware.consultoriomedico.model.Cita;
 import com.ingenieriasoftware.consultoriomedico.service.CitaService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/citas")
@@ -19,19 +26,13 @@ public class CitaController {
     }
 
     @PostMapping("/agendar")
-    public ResponseEntity<Cita> agendarCita(
-            @RequestParam Long idMedico,
-            @RequestParam String cedulaPaciente,
-            @RequestParam LocalDate fecha,
-            @RequestParam LocalTime hora,
-            @RequestParam Integer duracion
-    ) {
+    public ResponseEntity<Cita> agendarCita(@Valid @RequestBody CitaRequestDTO citaDTO) {
         Cita cita = citaService.crearCita(
-                idMedico,
-                cedulaPaciente,
-                fecha,
-                hora,
-                duracion
+                citaDTO.getIdMedico(),
+                citaDTO.getCedulaPaciente(),
+                citaDTO.getFecha(),
+                citaDTO.getHora(),
+                citaDTO.getDuracion()
         );
 
         return ResponseEntity.ok(cita);
