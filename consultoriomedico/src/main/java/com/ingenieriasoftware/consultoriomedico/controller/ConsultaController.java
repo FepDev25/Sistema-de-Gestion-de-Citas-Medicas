@@ -1,5 +1,6 @@
 package com.ingenieriasoftware.consultoriomedico.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +26,13 @@ public class ConsultaController {
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarConsulta(@Valid @RequestBody ConsultaRequestDTO consultaDTO) {
-        return ResponseEntity.ok(
+        return new ResponseEntity<>(
                 consultaService.registrarConsulta(
                         consultaDTO.getIdCita(),
                         consultaDTO.getDiagnostico(),
                         consultaDTO.getObservaciones(),
                         consultaDTO.getPrescripcion()
-                )
+                ), HttpStatus.CREATED
         );
     }
 

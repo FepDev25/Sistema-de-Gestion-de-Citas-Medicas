@@ -1,5 +1,6 @@
 package com.ingenieriasoftware.consultoriomedico.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +36,7 @@ public class CitaController {
                 citaDTO.getDuracion()
         );
 
-        return ResponseEntity.ok(cita);
+        return new ResponseEntity<>(cita, HttpStatus.CREATED);
     }
 
     //LISTAR TODAS LAS CITAS
