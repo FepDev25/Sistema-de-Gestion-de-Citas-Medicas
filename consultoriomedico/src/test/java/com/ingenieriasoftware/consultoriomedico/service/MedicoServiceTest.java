@@ -1,25 +1,27 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
 
-import com.ingenieriasoftware.consultoriomedico.model.Medico;
-import com.ingenieriasoftware.consultoriomedico.repository.MedicoRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.ingenieriasoftware.consultoriomedico.model.Medico;
+import com.ingenieriasoftware.consultoriomedico.repository.MedicoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MedicoServiceTest {
@@ -117,8 +119,7 @@ class MedicoServiceTest {
     @Test
     void testRevisarAgenda() {
         // Arrange
-        Date fecha = new Date();
-
+        LocalDate fecha = LocalDate.now();
         // Act
         boolean resultado = medicoService.revisarAgenda(1L, fecha);
 
