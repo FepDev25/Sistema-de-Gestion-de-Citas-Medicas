@@ -1,9 +1,10 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
 import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
@@ -19,6 +20,7 @@ public class MedicoService {
         this.medicoRepository = medicoRepository;
     }
     // Método para registrar un nuevo médico
+    @Transactional
     public Medico registrarMedico(Medico medico) {
         if (medicoRepository.findByLicencia(medico.getLicencia()).isPresent()) {
             throw new ConflictException("La licencia " + medico.getLicencia() + " ya está registrada.");
@@ -36,7 +38,7 @@ public class MedicoService {
     }
 
     // Método requerido para integración con Citas
-    public boolean revisarAgenda(Long idMedico, Date fecha) {
+    public boolean revisarAgenda(Long idMedico, LocalDate fecha) {
         // Por ahora retornamos true hasta que se integre el módulo de Citas
         return true; 
     }

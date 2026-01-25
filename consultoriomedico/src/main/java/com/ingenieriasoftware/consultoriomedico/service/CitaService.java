@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
 import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
@@ -32,6 +33,7 @@ public class CitaService {
     /**
      * Crear una nueva cita médica
      */
+    @Transactional
     public Cita crearCita(Long idMedico, String cedulaPaciente, LocalDate fecha, LocalTime horaInicio, Integer duracion) {
 
         Medico medico = medicoService.buscarPorId(idMedico);
@@ -90,6 +92,7 @@ public class CitaService {
         return citaRepository.findByPacienteId(paciente.getId());
     }
 
+    @Transactional
     public Cita cancelarCita(Long idCita) {
 
         // Buscar la cita

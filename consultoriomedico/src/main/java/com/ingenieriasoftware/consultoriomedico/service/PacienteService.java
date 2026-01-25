@@ -1,6 +1,7 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
 import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
@@ -16,6 +17,7 @@ public class PacienteService {
         this.pacienteRepository = pacienteRepository;
     }
 
+    @Transactional
     public Paciente crearPaciente(Paciente paciente) {
         if (pacienteRepository.findByCedula(paciente.getCedula()).isPresent()) {
             throw new ConflictException("Ya existe un paciente con esa cédula");

@@ -9,6 +9,7 @@ import com.ingenieriasoftware.consultoriomedico.model.Consulta;
 import com.ingenieriasoftware.consultoriomedico.model.EstadoCita;
 import com.ingenieriasoftware.consultoriomedico.repository.CitaRepository;
 import com.ingenieriasoftware.consultoriomedico.repository.ConsultaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConsultaService {
@@ -22,6 +23,7 @@ public class ConsultaService {
         this.citaRepository = citaRepository;
     }
 
+    @Transactional
     public Consulta registrarConsulta(Long idCita,
                                       String diagnostico,
                                       String observaciones,
