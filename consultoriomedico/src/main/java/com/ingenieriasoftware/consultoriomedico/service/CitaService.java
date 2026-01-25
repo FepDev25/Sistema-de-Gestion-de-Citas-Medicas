@@ -1,15 +1,16 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.ingenieriasoftware.consultoriomedico.model.Cita;
 import com.ingenieriasoftware.consultoriomedico.model.EstadoCita;
 import com.ingenieriasoftware.consultoriomedico.model.Medico;
 import com.ingenieriasoftware.consultoriomedico.model.Paciente;
 import com.ingenieriasoftware.consultoriomedico.repository.CitaRepository;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 @Service
 public class CitaService {
@@ -29,28 +30,39 @@ public class CitaService {
     /**
      * Crear una nueva cita médica
      */
-    public Cita crearCita(Long idMedico,
-                          String cedulaPaciente,
-                          LocalDate fecha,
-                          LocalTime hora,
-                          Integer duracion) {
+    public Cita crearCita(Long idMedico, String cedulaPaciente, LocalDate fecha, LocalTime horaInicio, Integer duracion) {
 
-        // 1. Obtener médico (usa lógica existente)
         Medico medico = medicoService.buscarPorId(idMedico);
-
-        // 2. Obtener paciente (usa lógica existente)
         Paciente paciente = pacienteService.buscarPorCedula(cedulaPaciente);
 
-        // 3. Crear la cita
+        // verificar solapamiento de horarios
+        LocalTime horaFin = horaInicio.plusMinutes(duracion);
+
+        List<Cita> citasDelDia = citaRepository.findByMedico_IdAndFechaAndEstadoNot(
+                idMedico, 
+                fecha, 
+                EstadoCita.CANCELADA
+        );
+
+        for (Cita citaExistente : citasDelDia) {
+            LocalTime inicioExistente = citaExistente.getHora();
+            LocalTime finExistente = inicioExistente.plusMinutes(citaExistente.getDuracion());
+
+            // (StartA < EndB) && (EndA > StartB)
+            if (horaInicio.isBefore(finExistente) && horaFin.isAfter(inicioExistente)) {
+                throw new RuntimeException("El médico ya tiene una cita agendada en ese horario (" 
+                        + inicioExistente + " - " + finExistente + ")");
+            }
+        }
+
         Cita cita = new Cita();
         cita.setMedico(medico);
         cita.setPaciente(paciente);
         cita.setFecha(fecha);
-        cita.setHora(hora);
+        cita.setHora(horaInicio);
         cita.setDuracion(duracion);
         cita.setEstado(EstadoCita.SOLICITADA);
 
-        // 4. Guardar y retornar
         return citaRepository.save(cita);
     }
 
