@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ingenieriasoftware.consultoriomedico.dto.PacienteRequestDTO;
+import com.ingenieriasoftware.consultoriomedico.mapper.PacienteMapper;
 import com.ingenieriasoftware.consultoriomedico.model.Paciente;
 import com.ingenieriasoftware.consultoriomedico.service.PacienteService;
 
@@ -20,23 +21,16 @@ import jakarta.validation.Valid;
 public class PacienteController {
 
     private final PacienteService pacienteService;
+    private final PacienteMapper pacienteMapper;
 
-    public PacienteController(PacienteService pacienteService) {
+    public PacienteController(PacienteService pacienteService, PacienteMapper pacienteMapper) {
         this.pacienteService = pacienteService;
+        this.pacienteMapper = pacienteMapper;
     }
 
     @PostMapping
     public ResponseEntity<Paciente> crearPaciente(@Valid @RequestBody PacienteRequestDTO pacienteDTO) {
-        Paciente paciente = new Paciente();
-        paciente.setNombres(pacienteDTO.getNombres());
-        paciente.setApellidos(pacienteDTO.getApellidos());
-        paciente.setUsername(pacienteDTO.getUsername());
-        paciente.setPassword(pacienteDTO.getPassword());
-        paciente.setCedula(pacienteDTO.getCedula());
-        paciente.setTelefono(pacienteDTO.getTelefono());
-        paciente.setDireccion(pacienteDTO.getDireccion());
-        paciente.setFechaNacimiento(pacienteDTO.getFechaNacimiento());
-
+        Paciente paciente = pacienteMapper.toEntity(pacienteDTO);
         return new ResponseEntity<>(pacienteService.crearPaciente(paciente), HttpStatus.CREATED);
     }
 
