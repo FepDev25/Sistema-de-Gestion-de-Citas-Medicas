@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
+import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
 import com.ingenieriasoftware.consultoriomedico.model.Cita;
 import com.ingenieriasoftware.consultoriomedico.model.EstadoCita;
 import com.ingenieriasoftware.consultoriomedico.model.Medico;
@@ -50,7 +52,7 @@ public class CitaService {
 
             // (StartA < EndB) && (EndA > StartB)
             if (horaInicio.isBefore(finExistente) && horaFin.isAfter(inicioExistente)) {
-                throw new RuntimeException("El médico ya tiene una cita agendada en ese horario (" 
+                throw new ConflictException("El médico ya tiene una cita agendada en ese horario (" 
                         + inicioExistente + " - " + finExistente + ")");
             }
         }
@@ -92,11 +94,11 @@ public class CitaService {
 
         // Buscar la cita
         Cita cita = citaRepository.findById(idCita)
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         // Validar que no esté finalizada
         if (cita.getEstado() == EstadoCita.FINALIZADA) {
-            throw new RuntimeException("No se puede cancelar una cita ya atendida");
+            throw new ConflictException("No se puede cancelar una cita ya atendida");
         }
 
         // Cambiar estado a CANCELADA

@@ -1,11 +1,14 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
+import org.springframework.stereotype.Service;
+
+import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
+import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
 import com.ingenieriasoftware.consultoriomedico.model.Cita;
 import com.ingenieriasoftware.consultoriomedico.model.Consulta;
 import com.ingenieriasoftware.consultoriomedico.model.EstadoCita;
 import com.ingenieriasoftware.consultoriomedico.repository.CitaRepository;
 import com.ingenieriasoftware.consultoriomedico.repository.ConsultaRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ConsultaService {
@@ -26,16 +29,16 @@ public class ConsultaService {
 
         //Buscar la cita
         Cita cita = citaRepository.findById(idCita)
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         //Validar que no esté atendida
         if (cita.getEstado() == EstadoCita.FINALIZADA) {
-            throw new RuntimeException("La cita ya fue atendida");
+            throw new ConflictException("La cita ya fue atendida");
         }
 
         //Validar que no exista consulta previa
         if (consultaRepository.findByCita_IdCita(idCita).isPresent()) {
-            throw new RuntimeException("La cita ya tiene una consulta registrada");
+            throw new ConflictException("La cita ya tiene una consulta registrada");
         }
 
         //Crear la consulta
@@ -59,7 +62,7 @@ public class ConsultaService {
 
     return consultaRepository.findByCita_IdCita(idCita)
             .orElseThrow(() ->
-                    new RuntimeException("No existe consulta para la cita con id: " + idCita)
+                    new ResourceNotFoundException("No existe consulta para la cita con id: " + idCita)
             );
     }
 

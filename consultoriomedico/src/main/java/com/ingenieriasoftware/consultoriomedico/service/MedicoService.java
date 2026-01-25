@@ -1,11 +1,14 @@
 package com.ingenieriasoftware.consultoriomedico.service;
 
-import com.ingenieriasoftware.consultoriomedico.model.Medico;
-import com.ingenieriasoftware.consultoriomedico.repository.MedicoRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.ingenieriasoftware.consultoriomedico.exception.ConflictException;
+import com.ingenieriasoftware.consultoriomedico.exception.ResourceNotFoundException;
+import com.ingenieriasoftware.consultoriomedico.model.Medico;
+import com.ingenieriasoftware.consultoriomedico.repository.MedicoRepository;
 
 @Service
 public class MedicoService {
@@ -18,7 +21,7 @@ public class MedicoService {
     // Método para registrar un nuevo médico
     public Medico registrarMedico(Medico medico) {
         if (medicoRepository.findByLicencia(medico.getLicencia()).isPresent()) {
-            throw new RuntimeException("La licencia " + medico.getLicencia() + " ya está registrada.");
+            throw new ConflictException("La licencia " + medico.getLicencia() + " ya está registrada.");
         }
         medico.setRol("MEDICO");
         return medicoRepository.save(medico);
@@ -29,7 +32,7 @@ public class MedicoService {
     }
     // Método para buscar un médico por ID
     public Medico buscarPorId(Long id) {
-        return medicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+        return medicoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Médico no encontrado"));
     }
 
     // Método requerido para integración con Citas
